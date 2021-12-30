@@ -2,8 +2,8 @@
 	class DB {
 		#private $host = "project-datasource.cynjhpjrvukf.us-east-2.rds.amazonaws.com";
         private $host = "127.0.0.1";
-		private $username = "botanic_user";
-		private $pwd = "botanic_0$";
+		private $username = "root";
+		private $pwd = "";
 		private $db_name = "botanic";
 		public $connection;
 
