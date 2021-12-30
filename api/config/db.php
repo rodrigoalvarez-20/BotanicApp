@@ -1,7 +1,7 @@
 <?php
 	class DB {
 		#private $host = "project-datasource.cynjhpjrvukf.us-east-2.rds.amazonaws.com";
-        private $host = "127.0.0.1";
+        private $host = "localhost";
 		private $username = "root";
 		private $pwd = "";
 		private $db_name = "botanic";
@@ -12,7 +12,7 @@
 			$this->connection = null;
 			try{
 				$this->connection = new PDO("mysql:host=".$this->host.";dbname=".$this->db_name, $this->username, $this->pwd);
-        		//echo("Conexion establecida");
+        		echo("Conexion establecida");
 			}catch(PDOException $ex){
 				echo "Error al conectar con la base de datos: ".$ex->getMessage();
 			}

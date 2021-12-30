@@ -19,9 +19,12 @@
     $apellidos = $data->apellidos;
     $email = $data->email;
     $pwd = $data->password;
-    if($user->crear_usuario($nombre, $apellidos,$email, $pwd)){
+
+    echo json_encode(array("message" => "Api correcta"));
+
+    /* if($user->crear_usuario($nombre, $apellidos,$email, $pwd)){
         echo json_encode(array("message"=>"Se ha creado el usuario"));
     }else{
         echo json_encode(array("error"=>"Ha ocurrido un error al crear el usuario"));
-    }
+    } */
 ?>

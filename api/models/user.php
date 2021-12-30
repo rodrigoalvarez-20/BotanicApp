@@ -19,6 +19,7 @@
     //Funcion para crear un nuevo usuario
     function crear_usuario($Nombre, $Apellidos, $Email, $Password){
         $query =  "INSERT INTO ".$this->table_name."  VALUES (0,:Nombre,:Apellidos,:Email,:Password)";
+        echo("Crear usuario");
         $stmt = $this->connection->prepare($query);
         $stmt->bindParam(":Nombre", $Nombre);
         $stmt->bindParam(":Apellidos", $Apellidos);

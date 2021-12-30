@@ -109,7 +109,7 @@ sudo mysql -h localhost -u root botanic < ruta_carpeta_raiz_proyecto/database.sq
 
 Con lo cual se generarán las tablas y datos necesarios para utilizar la aplicación
 
-Una vez terminado con la base de datos, en otra terminal, nos dirigimos a la carpeta `api` mediante `cd api` y ejecutamos el servidor PHP local mediante `php -S 127.0.0.1:8000`, lo cual creará un servidor local de desarrollo en la direccion 127.0.0.1 y el puerto 8000.
+Una vez terminado con la base de datos, en otra terminal, nos dirigimos a la carpeta raiz del proyecto y ejecutamos el servidor PHP local mediante `php -S 127.0.0.1:8000`, lo cual creará un servidor local de desarrollo en la direccion 127.0.0.1 y el puerto 8000.
 
 ### Frontend
 
