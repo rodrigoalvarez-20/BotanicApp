@@ -18,26 +18,26 @@ const cookies = new Cookies();
 const columnas = [
     {
         title: 'Nombre',
-        field: 'Nombre'
+        field: 'nombre'
     },
     {
         title: 'Especie',
-        field: 'Especie'
+        field: 'especie'
     }, {
         title: 'Tipo',
-        field: 'Tipo'
+        field: 'tipo'
     },
     {
         title: 'Dimension inicial',
-        field: 'Dimension_Inicial'
+        field: 'dimension_inicial'
     },
     {
         title: 'Tipo de tierra',
-        field: 'Tipo_Tierra'
+        field: 'tipo_tierra'
     },
     {
         title: 'Tipo de luz',
-        field: 'Tipo_Luz'
+        field: 'tipo_luz'
     }
 ];
 
@@ -50,15 +50,15 @@ const Catalogo = () => {
     };
 
     const defaultModel = {
-        ID: -1,
-        Nombre: "",
-        Especie: "",
-        Tipo: "",
-        Descripcion: "",
-        Dimension: "",
-        Tierra: "",
-        Luz: "",
-        Cuidados: ""
+        id: -1,
+        nombre: "",
+        especie: "",
+        tipo: "",
+        descripcion: "",
+        dimension: "",
+        tierra: "",
+        luz: "",
+        cuidados: ""
     }
 
     const [models, setModels] = useState([]);
@@ -70,16 +70,21 @@ const Catalogo = () => {
     const [displayModal, setDisplayModalStatus] = useState(false);
 
     useEffect(() => {
-        if (!cookies.get("id")) {
+        if (!cookies.get("token")) {
             window.location.href = "/";
         }
-        axios.get("/api/catalog/all.php").then(response => {
-            const { plants } = response.data;
-            if (plants)
-                setModels(plants);
+        axios.get("/api/catalog", { headers: { "Authorization": cookies.get("token") } }).then(response => {
+            //const { plants } = response.data;
+            //if (plants)
+            //    setModels(plants);
+            console.log(response.data)
+            setModels(response.data);
         }).catch(error => {
             console.log(error);
-            toast.error("Ha ocurrido un error en la peticion");
+            if (error.response.data.error) {
+                toast.error(error.response.data.error);
+            } else
+                toast.error("Ha ocurrido un error en la peticion");
         }).finally(() => setFetchingDataStatus(false));
 
     }, []);
@@ -107,27 +112,11 @@ const Catalogo = () => {
     }
 
     const submitModelForm = () => {
-        const { ID, Nombre, Especie, Tipo, Descripcion, Dimension, Tierra, Luz, Cuidados } = actualModel;
-
-        var data = new FormData();
-
         setMakingPetitionStatus(true);
-
-        data.append("nombre", Nombre);
-        data.append("especie", Especie);
-        data.append("tipo", Tipo);
-        data.append("descripcion", Descripcion);
-        data.append("dimension", Dimension);
-        data.append("tierra", Tierra);
-        data.append("luz", Luz);
-        data.append("cuidados", Cuidados);
-
         if (actualOperation === "Añadir") {
-            axios.post("/api/catalog/add.php", data).then(response => {
-                const { error, message } = response.data;
+            axios.post("/api/catalog", actualModel, { headers: { "Authorization": cookies.get("token") } }).then(response => {
+                const { message } = response.data;
                 //console.log(response.data)
-                if (error)
-                    toast.warning(error);
                 if (message) {
                     toast.success(message);
                     setTimeout(() => { }, 5000);
@@ -135,15 +124,15 @@ const Catalogo = () => {
                 }
             }).catch(error => {
                 console.log(error);
-                toast.error("Ha ocurrido un error en la peticion");
+                if (error.response.data.error) {
+                    toast.error(error.response.data.error);
+                } else
+                    toast.error("Ha ocurrido un error en la peticion");
             }).finally(() => { setMakingPetitionStatus(false) });
         } else if (actualOperation === "Editar") {
-            data.append("id", ID);
-            axios.post(`/api/catalog/update.php`, data).then(response => {
-                const { error, message } = response.data;
+            axios.patch(`/api/catalog`, actualModel, { headers: { "Authorization": cookies.get("token") } }).then(response => {
+                const { message } = response.data;
                 //console.log(response.data)
-                if (error)
-                    toast.warning(error);
                 if (message) {
                     toast.success(message);
                     setTimeout(() => { }, 5000);
@@ -151,13 +140,16 @@ const Catalogo = () => {
                 }
             }).catch(error => {
                 console.log(error);
-                toast.error("Ha ocurrido un error en la peticion");
+                if (error.response.data.error) {
+                    toast.error(error.response.data.error);
+                } else
+                    toast.error("Ha ocurrido un error en la peticion");
             }).finally(() => { setMakingPetitionStatus(false) });
         }
     }
 
     const logout = () => {
-        cookies.remove("id");
+        cookies.remove("token");
         cookies.remove("name");
         cookies.remove("email");
         window.location.href = "/";
@@ -186,7 +178,7 @@ const Catalogo = () => {
                         tooltip: 'Ver modelo',
                         onClick: (event, rowData) => {
                             //console.log(rowData)
-                            setActualModel({ ...rowData, Dimension: rowData["Dimension_Inicial"], Tierra: rowData["Tipo_Tierra"], Luz: rowData["Tipo_Luz"], Cuidados: rowData["Cuidados_Necesarios"] });
+                            setActualModel({ ...rowData, dimension: rowData["dimension_inicial"], tierra: rowData["tipo_tierra"], luz: rowData["tipo_luz"], cuidados: rowData["cuidados_necesarios"] });
                             setDisplayModalStatus(true);
                         }
                     },
@@ -195,7 +187,7 @@ const Catalogo = () => {
                         tooltip: 'Editar planta',
                         onClick: (event, rowData) => {
                             //console.log(rowData)
-                            setActualModel({ ...rowData, Dimension: rowData["Dimension_Inicial"], Tierra: rowData["Tipo_Tierra"], Luz: rowData["Tipo_Luz"], Cuidados: rowData["Cuidados_Necesarios"] });
+                            setActualModel({ ...rowData, dimension: rowData["dimension_inicial"], tierra: rowData["tipo_tierra"], luz: rowData["tipo_luz"], cuidados: rowData["cuidados_necesarios"] });
                             setActualOperation("Editar");
                             setDisplayModelForm(true)
                         }
@@ -231,10 +223,10 @@ const Catalogo = () => {
                 <p style={{ fontSize: "18pt" }} className="text-success">{actualOperation} modelo</p>
                 {
                     Object.keys(actualModel).map((key, idx) => {
-                        if (key !== "ID" && key !== "tableData" && !key.includes("_"))
+                        if (key !== "id" && key !== "tableData" && !key.includes("_"))
                             return (
                                 <div key={idx} className="mb-3">
-                                    <label htmlFor={`txt${key}`} className="form-label">{key}</label>
+                                    <label htmlFor={`txt${key}`} className="form-label">{`${key[0].toUpperCase()}${key.slice(1)}`}</label>
                                     <input type="text" className="form-control" id={`txt${key}`} name={key} onChange={handleFormChange} value={actualModel[key]} />
                                 </div>
                             )
@@ -287,16 +279,16 @@ const Catalogo = () => {
                 aria-describedby="alert-dialog-description"
                 maxWidth={"md"}
             >
-                <DialogTitle id="alert-dialog-title">{actualModel.Nombre}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{actualModel.nombre}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <p>Especie: {actualModel.Especie}</p>
-                        <p>Tipo: {actualModel.Tipo}</p>
-                        <p>Descripcion: {actualModel.Descripcion}</p>
-                        <p>Dimension Inicial: {actualModel.Dimension}</p>
-                        <p>Tipo de tierra: {actualModel.Tierra}</p>
-                        <p>Tipo de luz: {actualModel.Luz}</p>
-                        <p>Cuidados: {actualModel.Cuidados}</p>
+                        <p>Especie: {actualModel.especie}</p>
+                        <p>Tipo: {actualModel.tipo}</p>
+                        <p>Descripcion: {actualModel.descripcion}</p>
+                        <p>Dimension Inicial: {actualModel.dimension}</p>
+                        <p>Tipo de tierra: {actualModel.tierra}</p>
+                        <p>Tipo de luz: {actualModel.luz}</p>
+                        <p>Cuidados: {actualModel.cuidados}</p>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

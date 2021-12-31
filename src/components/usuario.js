@@ -8,16 +8,22 @@ import 'react-toastify/dist/ReactToastify.css';
 //const bdUrl="http://localhost:3001/usuarios";
 const cookies = new Cookies();
 
+const defState = {
+    email: '',
+    password: '',
+    name: "",
+    lastName: "",
+    regEmail: "",
+    regPassword: "",
+    loginLoad: false,
+    registerLoad: false
+}
+
 class Usuario extends Component {
-    state = {
-        email: '',
-        password: '',
-        name: "",
-        lastName: "",
-        regEmail: "",
-        regPassword: "",
-        loginLoad: false,
-        registerLoad: false
+    state = defState;
+
+    resetState = () => {
+        this.setState({ ...defState });
     }
 
     handleChange = (e) => {
@@ -29,9 +35,7 @@ class Usuario extends Component {
     componentDidMount() {
         axios.get("/api").then(response => console.log(response.data)).catch(error => console.log(error));
 
-        //console.log(cookies.getAll())
-
-        if (cookies.get("email") && cookies.get("id")) {
+        if (cookies.get("token") && cookies.get("email")) {
             const user = cookies.get("nombre");
             toast.success(`Bienvenido de nuevo ${user}`);
             window.location.href = "/planta";
@@ -45,25 +49,26 @@ class Usuario extends Component {
         if (email.trim().length === 0 || password.trim().length === 0) {
             toast.warning("Los campos no pueden quedar vacios")
         } else {
-            axios.post("/api/users/login.php", { email, password }).then(response => {
-                const { error, message, ID, Nombre, Email } = response.data;
-
-                if (error)
-                    toast.error(error);
+            axios.post("/api/users/login", { email, password }).then(response => {
+                const { message, token, nombre, email } = response.data;
 
                 if (message) {
+                    console.log(message);
                     toast.success(message);
                     var dt = new Date();
                     dt.setHours(dt.getHours() + 2);
-                    cookies.set("id", ID, { path: "/", expires: dt });
-                    cookies.set("name", Nombre, { path: "/", expires: dt });
-                    cookies.set("email", Email, { path: "/", expires: dt });
+                    cookies.set("token", token, { path: "/", expires: dt });
+                    cookies.set("name", nombre, { path: "/", expires: dt });
+                    cookies.set("email", email, { path: "/", expires: dt });
                     window.location.href = "/planta";
                 }
             }).catch(error => {
                 console.log(error);
-                toast.error("Ha ocurrido un error en la peticion");
-            }).finally(() => this.setState({ loginLoad: false }));
+                if (error.response.data.error) {
+                    toast.error(error.response.data.error);
+                } else
+                    toast.error("Ha ocurrido un error en la peticion");
+            }).finally(this.resetState);
         }
     }
 
@@ -72,22 +77,23 @@ class Usuario extends Component {
         this.setState({ registerLoad: true });
         if (name.trim().length === 0 || lastName.trim().length === 0 || regEmail.trim().length === 0 || regPassword.trim().length === 0) {
             toast.warning("Los campos no pueden quedar vacios")
+            this.setState({ registerLoad: false })
         } else if (regPassword.length < 8) {
             toast.warning("La contraseña debe de tener minimo 8 caracteres")
+            this.setState({ registerLoad: false })
         } else {
-            axios.post("/api/users/register.php", { nombre: name, apellidos: lastName, email: regEmail, password: regPassword }).then(response => {
-                //console.log(response.data);
-                const { error, message } = response.data;
-                if (error) {
-                    toast.error(error);
-                }
+            axios.post("/api/users/register", { nombre: name, apellidos: lastName, email: regEmail, password: regPassword }).then(response => {
+                const { message } = response.data;
                 if (message) {
                     toast.success(message)
                 }
             }).catch(error => {
                 console.log(error);
-                toast.error("Ha ocurrido un error en la peticion");
-            }).finally(() => this.setState({ registerLoad: false }));
+                if (error.response.data.error) {
+                    toast.error(error.response.data.error);
+                } else
+                    toast.error("Ha ocurrido un error en la peticion");
+            }).finally(this.resetState);
         }
     }
 
@@ -127,16 +133,16 @@ class Usuario extends Component {
                             <form>
                                 <div className="form-group" style={{ width: "80%" }}>
                                     <label style={{ margin: "4px" }}>Nombre</label>
-                                    <input style={{ margin: "4px" }} type="text" className="form-control" name="name" placeholder="Jane" onChange={this.handleChange} />
+                                    <input style={{ margin: "4px" }} type="text" className="form-control" name="name" placeholder="Jane" value={this.state.name} onChange={this.handleChange} />
 
                                     <label style={{ margin: "4px" }}>Apellidos</label>
-                                    <input style={{ margin: "4px" }} type="text" className="form-control" name="lastName" placeholder="Doe" onChange={this.handleChange} />
+                                    <input style={{ margin: "4px" }} type="text" className="form-control" name="lastName" placeholder="Doe" value={this.state.lastName} onChange={this.handleChange} />
 
                                     <label style={{ margin: "4px" }}>Correo electronico</label>
-                                    <input style={{ margin: "4px" }} type="email" className="form-control" name="regEmail" placeholder="janedoe@example.com" onChange={this.handleChange} />
+                                    <input style={{ margin: "4px" }} type="email" className="form-control" name="regEmail" placeholder="janedoe@example.com" value={this.state.regEmail} onChange={this.handleChange} />
 
                                     <label style={{ margin: "4px" }}>Contraseña</label>
-                                    <input style={{ margin: "4px" }} type="password" className="form-control" name="regPassword" placeholder="*********" onChange={this.handleChange} />
+                                    <input style={{ margin: "4px" }} type="password" className="form-control" name="regPassword" placeholder="*********" value={this.state.regPassword} onChange={this.handleChange} />
                                     {
                                         this.state.registerLoad ? <div style={{ margin: "12px 4px" }} className="spinner-border text-secondary" role="status">
                                             <span style={{ margin: "12px 4px" }} className="visually-hidden">Loading...</span>

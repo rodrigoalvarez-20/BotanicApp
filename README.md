@@ -104,7 +104,7 @@ En la carpeta raiz del proyecto se encuentra el archivo `database.sql`, el cual 
 Para cargar este archivo, basta con ejecutar
 
 ```
-sudo mysql -h localhost -u root botanic < ruta_carpeta_raiz_proyecto/database.sql
+sudo mysql  -u root botanic < ruta_carpeta_raiz_proyecto/database.sql
 ```
 
 Con lo cual se generarán las tablas y datos necesarios para utilizar la aplicación
