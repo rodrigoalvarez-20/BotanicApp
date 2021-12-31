@@ -11,11 +11,11 @@ create table if not exists `plants`(
     id int not null auto_increment,
     id_planta int not null,
     id_persona int not null,
-    url_imagen varchar(50) default "",
+    url_imagen varchar(100) default "",
     fecha_plantacion varchar(20),
     lugar_plantacion varchar(50),
     estado_actual varchar(50),
-    dimension_actual varchar(12),
+    dimension_actual varchar(30),
     primary key(id)
 );
 
@@ -25,7 +25,7 @@ create table if not exists `catalog`(
     especie varchar(100) default "",
     tipo varchar(100) default "",
     descripcion varchar(200) default "",
-    dimension_inicial varchar(20) default "",
+    dimension_inicial varchar(30) default "",
     tipo_tierra varchar(100) default "",
     tipo_luz varchar(100) default "",
     cuidados_necesarios varchar(500) default "",
