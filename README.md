@@ -2,6 +2,15 @@
 
 Una aplicación simple para gestionar las plantas de los usuarios
 
+Documentacion escrita por:
+- Alvarez Pérez Rodrigo
+- Casas Valero Luis Angel
+- Estrada Borja Frida Fernanda
+- Montero Bedolla Allan Jaime
+- Ruíz González Jonathan
+
+#
+
 ## Características
 
 - Seccion de perfil de usuario
