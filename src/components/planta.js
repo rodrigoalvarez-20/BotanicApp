@@ -100,7 +100,7 @@ const Planta = () => {
         }).then(async () => {
             try {
                 const data = await axios.get("/api/catalog", { headers: { "Authorization": cookies.get("token") } });
-                console.log(data.data);
+                //console.log(data.data);
                 setBaseModels(data.data);
             } catch (ex) {
                 console.log(ex);

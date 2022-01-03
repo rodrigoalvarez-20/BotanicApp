@@ -65,7 +65,7 @@ CatalogRouter.patch("/", authUser, (req, res) => {
     });
 
     const updateModel = "UPDATE catalog SET nombre = ?, especie = ?, tipo = ?, descripcion = ?, dimension_inicial = ?, tipo_tierra = ?, tipo_luz = ?, cuidados_necesarios = ? WHERE id_planta = ?";
-    console.log(req.body);
+    //console.log(req.body);
     const { id_planta, nombre, especie, tipo, descripcion, dimension, tierra, luz, cuidados } = req.body;
     connection.query(updateModel, [nombre, especie, tipo, descripcion, dimension, tierra, luz, cuidados, id_planta], (err, results) => {
         if (err) {

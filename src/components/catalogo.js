@@ -77,7 +77,7 @@ const Catalogo = () => {
             //const { plants } = response.data;
             //if (plants)
             //    setModels(plants);
-            console.log(response.data)
+            //console.log(response.data)
             setModels(response.data);
         }).catch(error => {
             console.log(error);
